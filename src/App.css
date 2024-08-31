@@ -1,0 +1,30 @@
+ul{
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap:15px;
+  padding: 0;
+}
+li{
+  width: 33;
+}
+form{
+  display: flex;
+  justify-content: center;
+}
+input{
+  padding: 10px 20px;
+  margin-right: 5px;
+  border: 1px solid;
+}
+button{
+  background-color:rgb(57, 91, 241);
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: white;
+}
+.load{
+  position: relative;
+  left:45%;
+  display: flex;
+}
