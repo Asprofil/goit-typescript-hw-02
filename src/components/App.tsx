@@ -9,17 +9,18 @@ import LoadMoreBtn from './LoadMoreBtn';
 import ImageModal from './ImageModal';
 import '../App.css'
 
+interface UnsplashResponse {
+  total: number;
+  total_pages: number;
+  results: ImageData[];
+}
+
 interface ImageData {
   id: string;
-  urls: {
-    small: string;
-    regular: string;
-  };
+  urls: { small: string; regular: string };
   alt_description: string;
   description?: string;
-  user: {
-    name: string;
-  };
+  user: { name: string };
   likes: number;
 }
 
@@ -32,27 +33,37 @@ const App: React.FC = () => {
   const [modalImage, setModalImage] = useState<ImageData | null>(null);
 
   const fetchImages = async (searchQuery: string, currentPage: number) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.get(
-        `https://api.unsplash.com/search/photos`,
-        {
-          params: {
-            query: searchQuery,
-            page: currentPage,
-            orientation: 'landscape',
-            client_id: 'IAPoAm_WfHwWd5X8jSOR1FO58wf7-po55kp2wVTHggQ',
-          },
-        }
-      );
+  setLoading(true);
+  setError(null);
+  
+  try {
+    const response = await axios.get<UnsplashResponse>(
+      `https://api.unsplash.com/search/photos`,
+      {
+        params: {
+          query: searchQuery,
+          page: currentPage,
+          orientation: 'landscape',
+          client_id: 'IAPoAm_WfHwWd5X8jSOR1FO58wf7-po55kp2wVTHggQ',
+        },
+      }
+    );
       setImages((prevImages) => [...prevImages, ...response.data.results]);
-    } catch (err: any) {
-      setError(err.message);
-      toast.error("Failed to load images.");
-    } finally {
-      setLoading(false);
-    }
+    } catch (err: unknown) {
+  if (axios.isAxiosError(err)) {
+    setError(err.message);
+    toast.error(`Failed to load images: ${err.message}`);
+  } else if (err instanceof Error) {
+    setError(err.message);
+    toast.error(`Failed to load images: ${err.message}`);
+  } else {
+    setError('An unknown error occurred.');
+    toast.error('Failed to load images.');
+  }
+} finally {
+  setLoading(false);
+}
+
   };
 
   const handleSearch = (newQuery: string) => {
